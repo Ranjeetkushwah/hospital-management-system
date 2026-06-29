@@ -78,8 +78,12 @@ const BookAppointment = () => {
     return slots;
   };
 
-  // Set minimum date to today
-  const today = new Date().toISOString().split('T')[0];
+  // Set minimum date to today in local timezone to prevent UTC rollover bugs
+  const localToday = new Date();
+  const year = localToday.getFullYear();
+  const month = String(localToday.getMonth() + 1).padStart(2, '0');
+  const day = String(localToday.getDate()).padStart(2, '0');
+  const today = `${year}-${month}-${day}`;
 
   return (
     <div className="form-container">
@@ -97,6 +101,11 @@ const BookAppointment = () => {
             value={formData.doctorId}
             onChange={handleChange}
             required
+            style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
           >
             <option value="">Choose a doctor...</option>
             {doctors.map((doctor) => (
@@ -117,9 +126,14 @@ const BookAppointment = () => {
             onChange={handleChange}
             min={today}
             required
+            style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
           />
         </div>
-        
+
         <div className="form-group">
           <label className="form-label">Appointment Time</label>
           <select
@@ -128,6 +142,11 @@ const BookAppointment = () => {
             value={formData.appointmentTime}
             onChange={handleChange}
             required
+            style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
           >
             <option value="">Select time...</option>
             {generateTimeSlots().map((slot) => (
@@ -146,6 +165,11 @@ const BookAppointment = () => {
             rows="4"
             placeholder="Please describe the reason for your appointment..."
             required
+            style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
           ></textarea>
         </div>
         

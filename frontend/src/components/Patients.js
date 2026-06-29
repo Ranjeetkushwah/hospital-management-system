@@ -30,58 +30,66 @@ const Patients = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, { timeZone: 'UTC' });
   };
 
   if (loading) {
-    return <div className="text-center">Loading...</div>;
+    return (
+      <div className="text-center" style={{ padding: '4rem 0' }}>
+        <div style={{ fontSize: '1.25rem', color: 'var(--text-muted)' }}>Loading Patients...</div>
+      </div>
+    );
   }
 
   if (user?.role !== 'doctor') {
     return (
-      <div className="card">
+      <div className="card text-center" style={{ padding: '3rem' }}>
         <h2>Access Denied</h2>
-        <p>Only doctors can view patient information.</p>
+        <p style={{ color: 'var(--text-muted)' }}>Only doctors can view patient information.</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h1>Patients</h1>
+      <h1>Patients Directory</h1>
       
       {error && <div className="alert alert-error">{error}</div>}
       
       {patients.length === 0 ? (
-        <div className="card">
-          <p>No patients registered yet.</p>
+        <div className="card text-center" style={{ padding: '3rem' }}>
+          <p style={{ color: 'var(--text-muted)' }}>No patients registered yet.</p>
         </div>
       ) : (
         <div className="card">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Date of Birth</th>
-                <th>Gender</th>
-                <th>Registered Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {patients.map((patient) => (
-                <tr key={patient._id}>
-                  <td>{patient.firstName} {patient.lastName}</td>
-                  <td>{patient.email}</td>
-                  <td>{patient.phone}</td>
-                  <td>{formatDate(patient.dateOfBirth)}</td>
-                  <td>{patient.gender}</td>
-                  <td>{formatDate(patient.createdAt)}</td>
+          <div className="table-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Date of Birth</th>
+                  <th>Gender</th>
+                  <th>Registered Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {patients.map((patient) => (
+                  <tr key={patient._id}>
+                    <td>{patient.firstName} {patient.lastName}</td>
+                    <td>{patient.email}</td>
+                    <td>{patient.phone}</td>
+                    <td>{formatDate(patient.dateOfBirth)}</td>
+                    <td style={{ textTransform: 'capitalize' }}>{patient.gender}</td>
+                    <td>{new Date(patient.createdAt).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
@@ -89,3 +97,4 @@ const Patients = () => {
 };
 
 export default Patients;
+  

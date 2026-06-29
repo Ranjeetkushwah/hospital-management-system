@@ -56,77 +56,90 @@ const Dashboard = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, { timeZone: 'UTC' });
   };
 
   if (loading) {
-    return <div className="text-center">Loading...</div>;
+    return (
+      <div className="text-center" style={{ padding: '4rem 0' }}>
+        <div style={{ fontSize: '1.25rem', color: 'var(--text-muted)' }}>Loading Dashboard...</div>
+      </div>
+    );
   }
 
   return (
     <div>
-      <h1>Welcome, {user?.firstName} {user?.lastName}!</h1>
-      <p>Role: {user?.role}</p>
+      <div className="dashboard-header">
+        <div>
+          <h1>Welcome, {user?.firstName} {user?.lastName}!</h1>
+          <p style={{ color: 'var(--text-muted)' }}>Here is your schedule and appointment summary.</p>
+        </div>
+        <span className="role-tag">{user?.role}</span>
+      </div>
       
       <div className="grid grid-3 mt-3">
         <div className="card">
           <h3>Total Appointments</h3>
-          <p className="text-center" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3498db' }}>
+          <p className="stats-num" style={{ color: '#60a5fa' }}>
             {stats.totalAppointments}
           </p>
         </div>
         
         <div className="card">
-          <h3>Upcoming</h3>
-          <p className="text-center" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#27ae60' }}>
+          <h3>Upcoming Slots</h3>
+          <p className="stats-num" style={{ color: '#34d399' }}>
             {stats.upcomingAppointments}
           </p>
         </div>
         
         <div className="card">
-          <h3>Completed</h3>
-          <p className="text-center" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#8e44ad' }}>
-            {stats.completedAppointments}
+          <h3>Cancelled / Completed</h3>
+          <p className="stats-num" style={{ color: '#f87171' }}>
+            {stats.cancelledAppointments} / {stats.completedAppointments}
           </p>
         </div>
       </div>
 
       <div className="card mt-3">
-        <h2>Recent Appointments</h2>
+        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>Recent Appointments</h2>
         {recentAppointments.length === 0 ? (
-          <p>No appointments found.</p>
+          <p style={{ textAlign: 'center', padding: '2rem 0' }}>No appointments scheduled.</p>
         ) : (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>{user?.role === 'doctor' ? 'Patient' : 'Doctor'}</th>
-                <th>Reason</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentAppointments.map((appointment) => (
-                <tr key={appointment._id}>
-                  <td>{formatDate(appointment.appointmentDate)}</td>
-                  <td>{appointment.appointmentTime}</td>
-                  <td>
-                    {user?.role === 'doctor' 
-                      ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
-                      : `${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                    }
-                  </td>
-                  <td>{appointment.reason}</td>
-                  <td>
-                    <span className={`status-badge status-${appointment.status}`}>
-                      {appointment.status}
-                    </span>
-                  </td>
+          <div className="table-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>{user?.role === 'doctor' ? 'Patient' : 'Doctor'}</th>
+                  <th>Reason</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentAppointments.map((appointment) => (
+                  <tr key={appointment._id}>
+                    <td>{formatDate(appointment.appointmentDate)}</td>
+                    <td>{appointment.appointmentTime}</td>
+                    <td>
+                      {user?.role === 'doctor' 
+                        ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
+                        : `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
+                      }
+                    </td>
+                    <td>{appointment.reason}</td>
+                    <td>
+                      <span className={`status-badge status-${appointment.status}`}>
+                        {appointment.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

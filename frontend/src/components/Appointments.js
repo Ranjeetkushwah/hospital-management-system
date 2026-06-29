@@ -43,11 +43,17 @@ const Appointments = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, { timeZone: 'UTC' });
   };
 
   if (loading) {
-    return <div className="text-center">Loading...</div>;
+    return (
+      <div className="text-center" style={{ padding: '4rem 0' }}>
+        <div style={{ fontSize: '1.25rem', color: 'var(--text-muted)' }}>Loading Appointments...</div>
+      </div>
+    );
   }
 
   return (
@@ -57,73 +63,76 @@ const Appointments = () => {
       {error && <div className="alert alert-error">{error}</div>}
       
       {appointments.length === 0 ? (
-        <div className="card mb-10">
-          <p>No appointments found.</p>
-          <a href="/book-appointment" className="btn btn-primary">Book an Appointment</a>
+        <div className="card text-center" style={{ padding: '3rem 1.5rem' }}>
+          <p style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}>No appointments found in the system.</p>
+          {user?.role === 'patient' && (
+            <a href="/book-appointment" className="btn btn-primary" style={{ display: 'inline-flex', textDecoration: 'none' }}>
+              Book an Appointment
+            </a>
+          )}
         </div>
       ) : (
         <div className="card">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>{user?.role === 'doctor' ? 'Patient' : 'Doctor'}</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {appointments.map((appointment) => (
-                <tr key={appointment._id}>
-                  <td>{formatDate(appointment.appointmentDate)}</td>
-                  <td>{appointment.appointmentTime}</td>
-                  <td>
-                    {user?.role === 'doctor' 
-                      ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
-                      : `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                    }
-                    {user?.role === 'patient' && (
-                      <br />
-                    )}
-                    {user?.role === 'patient' && (
-                      <small style={{ color: '#666' }}>
-                        {appointment.doctor.specialization}
-                      </small>
-                    )}
-                  </td>
-                  <td>{appointment.reason}</td>
-                  <td>
-                    <span className={`status-badge status-${appointment.status}`}>
-                      {appointment.status}
-                    </span>
-                  </td>
-                  <td>
-                    {appointment.status === 'scheduled' && (
-                      <button
-                        onClick={() => handleCancelAppointment(appointment._id)}
-                        className="btn btn-danger"
-                        style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-                      >
-                        Cancel
-                      </button>
-                    )}
-                    {appointment.status === 'cancelled' && (
-                      <span style={{ color: '#666', fontSize: '0.875rem' }}>
-                        Cancelled
-                      </span>
-                    )}
-                    {appointment.status === 'completed' && (
-                      <span style={{ color: '#27ae60', fontSize: '0.875rem' }}>
-                        Completed
-                      </span>
-                    )}
-                  </td>
+          <div className="table-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>{user?.role === 'doctor' ? 'Patient' : 'Doctor'}</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {appointments.map((appointment) => (
+                  <tr key={appointment._id}>
+                    <td>{formatDate(appointment.appointmentDate)}</td>
+                    <td>{appointment.appointmentTime}</td>
+                    <td>
+                      {user?.role === 'doctor' 
+                        ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
+                        : `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
+                      }
+                      {user?.role === 'patient' && appointment.doctor.specialization && (
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          {appointment.doctor.specialization}
+                        </div>
+                      )}
+                    </td>
+                    <td>{appointment.reason}</td>
+                    <td>
+                      <span className={`status-badge status-${appointment.status}`}>
+                        {appointment.status}
+                      </span>
+                    </td>
+                    <td>
+                      {appointment.status === 'scheduled' && (
+                        <button
+                          onClick={() => handleCancelAppointment(appointment._id)}
+                          className="btn btn-danger"
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', borderRadius: '6px' }}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      {appointment.status === 'cancelled' && (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                          Cancelled
+                        </span>
+                      )}
+                      {appointment.status === 'completed' && (
+                        <span style={{ color: 'var(--success)', fontSize: '0.85rem', fontWeight: 600 }}>
+                          Completed
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

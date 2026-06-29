@@ -18,6 +18,7 @@ const Register = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -54,7 +55,12 @@ const Register = () => {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label">Role</label>
-          <select className="form-control" name="role" value={formData.role} onChange={handleChange}>
+          <select className="form-control" name="role" value={formData.role} onChange={handleChange}
+          style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}>
             <option value="patient">Patient</option>
             <option value="doctor">Doctor</option>
           </select>
@@ -67,9 +73,15 @@ const Register = () => {
               type="text"
               className="form-control"
               name="firstName"
+              placeholder='Enter your first name'
               value={formData.firstName}
               onChange={handleChange}
               required
+              style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
             />
           </div>
           
@@ -79,9 +91,15 @@ const Register = () => {
               type="text"
               className="form-control"
               name="lastName"
+              placeholder='Enter your last name'
               value={formData.lastName}
               onChange={handleChange}
               required
+              style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
             />
           </div>
         </div>
@@ -92,9 +110,15 @@ const Register = () => {
             type="text"
             className="form-control"
             name="username"
+            placeholder='Enter your username'
             value={formData.username}
             onChange={handleChange}
             required
+            style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
           />
         </div>
         
@@ -106,7 +130,13 @@ const Register = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
+            placeholder='Enter your email'
             required
+            style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
           />
         </div>
         
@@ -116,23 +146,56 @@ const Register = () => {
             type="tel"
             className="form-control"
             name="phone"
+            placeholder='Enter your phone number'
             value={formData.phone}
             onChange={handleChange}
             required
+            style={{
+              color: "black",
+              cursor: "pointer",
+              backgroundColor: "#ffff"
+            }}
           />
         </div>
         
         <div className="form-group">
           <label className="form-label">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            minLength="6"
-          />
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              className="form-control"
+              name="password"
+              placeholder='Enter your password'
+              value={formData.password}
+              onChange={handleChange}
+              required
+              minLength="6"
+              style={{
+                paddingRight: '3rem',
+                color: "black",
+                cursor: "pointer",
+                backgroundColor: "#ffff"
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-muted)',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                fontWeight: 600
+              }}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
         </div>
 
         {formData.role === 'doctor' ? (
@@ -146,6 +209,12 @@ const Register = () => {
                 value={formData.specialization}
                 onChange={handleChange}
                 required
+                placeholder='Enter your specialization'
+                style={{
+                  color: "black",
+                  cursor: "pointer",
+                  backgroundColor: "#ffff"
+                }}
               />
             </div>
             
@@ -158,6 +227,12 @@ const Register = () => {
                 value={formData.experience}
                 onChange={handleChange}
                 required
+                placeholder='Enter your experience'
+                style={{
+                  color: "black",
+                  cursor: "pointer",
+                  backgroundColor: "#ffff"
+                }}
               />
             </div>
           </>
@@ -172,12 +247,24 @@ const Register = () => {
                 value={formData.dateOfBirth}
                 onChange={handleChange}
                 required
+                placeholder='Enter your date of birth'
+                style={{
+                  color: "black",
+                  cursor: "pointer",
+                  backgroundColor: "#ffff"
+                }}
               />
             </div>
             
             <div className="form-group">
               <label className="form-label">Gender</label>
-              <select className="form-control" name="gender" value={formData.gender} onChange={handleChange} required>
+              <select className="form-control" name="gender" value={formData.gender} onChange={handleChange}
+                 style={{
+                  color: "black",
+                  cursor: "pointer",
+                  backgroundColor: "#ffff"
+                }}
+              required>
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>

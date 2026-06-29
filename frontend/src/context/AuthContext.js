@@ -1,5 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import React, { createContext, useContext, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser, registerUser, fetchCurrentUser, logoutUser } from '../store/authSlice';
 
 const AuthContext = createContext();
 
@@ -12,96 +13,41 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const loading = useSelector((state) => state.auth.loading);
 
   useEffect(() => {
-    let token = null;
-    try {
-      token = localStorage.getItem('token');
-    } catch (error) {
-      console.warn('localStorage access denied:', error);
-    }
-    
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      fetchUser();
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchUser = async () => {
-    try {
-      const response = await axios.get('/api/auth/me');
-      setUser(response.data);
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      try {
-        localStorage.removeItem('token');
-      } catch (storageError) {
-        console.warn('localStorage access denied:', storageError);
-      }
-      delete axios.defaults.headers.common['Authorization'];
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Automatically trigger user profile lookup on reload/mount if token exists
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { username, password });
-      const { token, user } = response.data;
-      
-      try {
-        localStorage.setItem('token', token);
-      } catch (error) {
-        console.warn('localStorage access denied:', error);
-      }
-      
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(user);
-      
+      await dispatch(loginUser({ username, password })).unwrap();
       return { success: true };
     } catch (error) {
       return { 
         success: false, 
-        message: error.response?.data?.message || 'Login failed' 
+        message: error || 'Login failed' 
       };
     }
   };
 
   const register = async (userData) => {
     try {
-      const response = await axios.post('/api/auth/register', userData);
-      const { token, user } = response.data;
-      
-      try {
-        localStorage.setItem('token', token);
-      } catch (error) {
-        console.warn('localStorage access denied:', error);
-      }
-      
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(user);
-      
+      await dispatch(registerUser(userData)).unwrap();
       return { success: true };
     } catch (error) {
       return { 
         success: false, 
-        message: error.response?.data?.message || 'Registration failed' 
+        message: error || 'Registration failed' 
       };
     }
   };
 
   const logout = () => {
-    try {
-      localStorage.removeItem('token');
-    } catch (error) {
-      console.warn('localStorage access denied:', error);
-    }
-    delete axios.defaults.headers.common['Authorization'];
-    setUser(null);
+    dispatch(logoutUser());
   };
 
   const value = {

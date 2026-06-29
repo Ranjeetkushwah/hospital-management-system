@@ -20,12 +20,12 @@ const Navbar = () => {
         
         <ul className="navbar-nav">
           <li><Link to="/dashboard" className="nav-link">Dashboard</Link></li>
-          <li><Link to="/book-appointment" className="nav-link">Book Appointment</Link></li>
+          {user?.role === 'patient' && <li><Link to="/book-appointment" className="nav-link">Book Appointment</Link></li>}
           <li><Link to="/appointments" className="nav-link">My Appointments</Link></li>
           <li><Link to="/doctors" className="nav-link">Doctors</Link></li>
           {user?.role === 'doctor' && <li><Link to="/patients" className="nav-link">Patients</Link></li>}
           <li>
-            <button onClick={handleLogout} className="btn btn-secondary">
+            <button onClick={handleLogout} className="btn btn-secondary" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
               Logout
             </button>
           </li>

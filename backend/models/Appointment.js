@@ -37,7 +37,17 @@ const appointmentSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Ensure no duplicate appointments for same patient, doctor, date, and time
-appointmentSchema.index({ patient: 1, doctor: 1, appointmentDate: 1, appointmentTime: 1 }, { unique: true });
+// Ensure no duplicate scheduled appointments for the same doctor at the same date and time
+appointmentSchema.index(
+  { doctor: 1, appointmentDate: 1, appointmentTime: 1 },
+  { unique: true, partialFilterExpression: { status: 'scheduled' } }
+);
+
+// Ensure no duplicate scheduled appointments for the same patient at the same date and time
+appointmentSchema.index(
+  { patient: 1, appointmentDate: 1, appointmentTime: 1 },
+  { unique: true, partialFilterExpression: { status: 'scheduled' } }
+);
 
 module.exports = mongoose.model('Appointment', appointmentSchema);
+
